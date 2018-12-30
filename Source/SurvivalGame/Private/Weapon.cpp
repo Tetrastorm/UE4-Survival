@@ -201,7 +201,7 @@ void AWeapon::RaytracedShot()
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
-	FVector StartLocation = ItemMesh->GetSocketLocation(FName("b_gun_muzzleflash"));
+	FVector StartLocation = WeaponMesh->GetSocketLocation(FName("b_gun_muzzleflash"));
 	FRotator ShootRotation = FRotator(0.0, 90.0, 0.0);
 	ShootRotation.Pitch += FMath::RandRange(-shootDeviation, shootDeviation);
 	ShootRotation.Yaw += FMath::RandRange(-shootDeviation, shootDeviation);
@@ -286,7 +286,7 @@ void AWeapon::ShotPhysic()
 
 			this->GetAttachParentActor()->GetActorEyesViewPoint(CameraLoc, CameraRot);
 
-			FVector MuzzleLocation = ItemMesh->GetSocketLocation(FName("b_gun_muzzleflash"));
+			FVector MuzzleLocation = WeaponMesh->GetSocketLocation(FName("b_gun_muzzleflash"));
 			FRotator MuzzleRotation = CameraRot;
 			MuzzleRotation.Pitch += FMath::FRandRange(-shootDeviation, shootDeviation);
 			MuzzleRotation.Yaw += FMath::FRandRange(-shootDeviation, shootDeviation);
