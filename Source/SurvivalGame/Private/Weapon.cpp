@@ -14,6 +14,8 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 	WeaponMesh->bNoSkeletonUpdate = true;
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	WeaponMesh->SetSimulatePhysics(true);
 
 	RootComponent = WeaponMesh;
 	TriggerComponent->SetupAttachment(RootComponent);
@@ -55,7 +57,7 @@ EType AWeapon::GetType()
 
 void AWeapon::AttachToPawn(ACharacter* Actor)
 {
-	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GLog->Log(this->GetName() + " : " + this->GetActorLocation().ToString());
 
@@ -80,7 +82,7 @@ void AWeapon::DettachToPawn()
 
 	GLog->Log("A Weapon dettach to PlayerCharacter");
 
-	ItemMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
 void AWeapon::Attack()
