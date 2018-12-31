@@ -23,11 +23,11 @@ ABullet::ABullet(const FObjectInitializer& ObjectInitializer)
 
 	ProjectileMovement = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("Projectile Movement"));
 	ProjectileMovement->UpdatedComponent = CollisionSphere;
-	ProjectileMovement->InitialSpeed = 3400;
+	ProjectileMovement->InitialSpeed = 3400.0f;
 	ProjectileMovement->MaxSpeed = ProjectileMovement->InitialSpeed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
-	ProjectileMovement->Bounciness = 0.5;
+	ProjectileMovement->Bounciness = 0.5f;
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	AudioComponent->SetupAttachment(RootComponent);
@@ -55,6 +55,14 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABullet::SetSpeed(float newSpeed)
+{
+	if (ProjectileMovement)
+	{
+		ProjectileMovement->InitialSpeed = newSpeed;
+	}
 }
 
 void ABullet::InitialVelocity(const FVector& ShootDirection)

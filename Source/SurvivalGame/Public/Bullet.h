@@ -42,6 +42,7 @@ public:
 		void Dommage(class UPrimitiveComponent* OtherComponent, class AActor* OtherActor, class UPrimitiveComponent* Component, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 
 	void SetProjectileDamage(float newValue);
+	void SetSpeed(float newSpeed);
 
 private:
 

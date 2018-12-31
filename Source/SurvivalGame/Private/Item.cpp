@@ -62,7 +62,6 @@ void AItem::BeginPlay()
 void AItem::PickUp(AActor* OtherActor)
 {
 	ANPC* NPC = Cast<ANPC>(OtherActor);
-
 	GLog->Log("Picking up");
 
 	if (NPC)
@@ -70,9 +69,7 @@ void AItem::PickUp(AActor* OtherActor)
 		if (NPC->GetAction())
 		{
 			TriggerComponent->bGenerateOverlapEvents = false;
-
 			NPC->AddInventory(this);
-
 			GLog->Log(NPC->GetName() + " Picking up : " + this->GetName());
 		}
 	}

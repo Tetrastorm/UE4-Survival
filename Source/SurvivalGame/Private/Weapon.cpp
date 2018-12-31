@@ -8,8 +8,7 @@
 AWeapon::AWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	Munition = 0;
+	Munition = FMath::RandRange(0, maxMunition);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -42,8 +41,6 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Munition = maxMunition;
-	//iMunition = FMath::RandRange(0, maxMunition) * 2;
 }
 
 // Permitted to get the weapon type
@@ -305,6 +302,7 @@ void AWeapon::ShotPhysic()
 				if (Projectile != nullptr)
 				{
 					Projectile->SetProjectileDamage(BaseDamage);
+					Projectile->SetSpeed(projectileVelocity);
 
 					FVector const LaunchDir = MuzzleRotation.Vector();
 					Projectile->InitialVelocity(LaunchDir);
@@ -314,7 +312,6 @@ void AWeapon::ShotPhysic()
 						AudioComponent->SetSound(FireSound);
 						AudioComponent->Play();
 					}
-
 					GLog->Log(this->GetName() + " : Projectile Spawn");
 				}
 			}
