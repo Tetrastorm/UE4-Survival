@@ -55,15 +55,10 @@ EType AWeapon::GetType()
 void AWeapon::AttachToPawn(ACharacter* Actor)
 {
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	GLog->Log(this->GetName() + " : " + this->GetActorLocation().ToString());
-
 	RootComponent->AttachToComponent(Actor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Weapon_Socket_R"));
-
 	GLog->Log(this->GetName() + " : " + this->GetActorLocation().ToString());
-
 	RootComponent->SetRelativeLocation(FVector::ZeroVector);
-
 	GLog->Log("A Weapon is now attaching to " + this->GetName());
 	GLog->Log(this->GetName() + " : " + this->GetActorLocation().ToString());
 }
@@ -72,13 +67,11 @@ void AWeapon::AttachToPawn(ACharacter* Actor)
 
 void AWeapon::DettachToPawn()
 {
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
 	FTimerHandle TimerHandle;
+
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AWeapon::ReactivateOverlappingEvents, 2.5, false);
-
 	GLog->Log("A Weapon dettach to PlayerCharacter");
-
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
@@ -109,7 +102,6 @@ void AWeapon::ReactivateOverlappingEvents()
 void AWeapon::CQCAttack(AActor* TargetActor)
 {
 	GLog->Log(this->GetName() + " : CQC Attack");
-
 	if (TargetActor != nullptr)
 	{
 		ANPC* NPC = Cast<ANPC>(TargetActor);
@@ -117,7 +109,6 @@ void AWeapon::CQCAttack(AActor* TargetActor)
 		if (NPC != nullptr)
 		{
 			NPC->AddHealth(-BaseDamage);
-
 			GLog->Log(this->GetName() + " : Cause " + FString::SanitizeFloat(-BaseDamage) + " in CQC, to " + NPC->GetName() + "who is now in " + FString::SanitizeFloat(NPC->GetHealth()) + " HP");
 		}
 	}
@@ -147,19 +138,15 @@ bool AWeapon::CanCQC(const AWeapon* Weapon, AActor* OverlappedActor = nullptr)
 					if (NPC != nullptr)
 					{
 						OverlappedActor = NPC;
-
 						GLog->Log(this->GetName() + " : CanCQC = true, find " + OverlappedActor->GetName());
-
-						return true;
+						return (true);
 					}
 				}
 			}
 		}
 	}
-
 	GLog->Log(this->GetName() + " : CanCQC = false");
-
-	return false;
+	return (false);
 }
 
 // A shot function with raycasted traced technique (high performance but physics don't apply)
@@ -197,7 +184,6 @@ void AWeapon::Shot()
 void AWeapon::RaytracedShot()
 {
 	FHitResult Hit;
-
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 	FVector StartLocation = WeaponMesh->GetSocketLocation(FName("b_gun_muzzleflash"));
@@ -207,15 +193,12 @@ void AWeapon::RaytracedShot()
 	FVector EndLocation = GetActorLocation() + ((GetActorRotation() + ShootRotation).Vector() * RayLenght);
 
 	GetWorld()->LineTraceSingleByChannel(Hit, StartLocation, EndLocation, ECollisionChannel::ECC_Pawn, CollisionParams);
-
 	if (FireSound != nullptr)
 	{
 		AudioComponent->SetSound(FireSound);
 		AudioComponent->Play();
 	}
-
 	GLog->Log(Hit.ToString());
-
 	if (Hit.GetActor() != nullptr)
 	{
 		ANPC* HitActor = Cast<ANPC>(Hit.GetActor());
@@ -225,11 +208,9 @@ void AWeapon::RaytracedShot()
 			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 0.5, 0, 0.25);
 			GLog->Log(this->GetName() + " : Raytracing -Hit " + HitActor->GetName() + "-");
 			GLog->Log(this->GetName() + " : Hit at " + FString::SanitizeFloat(Hit.Distance) + " cm");
-
 			if (Hit.Distance < RayLenght / 3)
 			{
 				HitActor->AddHealth(-BaseDamage);
-
 				GLog->Log(this->GetName() + " : Cause " + FString::SanitizeFloat(-BaseDamage) + " (Max damage) to " + HitActor->GetName());
 			}
 			else
@@ -237,9 +218,7 @@ void AWeapon::RaytracedShot()
 				HitActor->AddHealth(-BaseDamage * (Hit.Distance / RayLenght));
 				GLog->Log(this->GetName() + " : Cause " + FString::SanitizeFloat(-BaseDamage) + " to " + HitActor->GetName());
 			}
-
 			GLog->Log(this->GetName() + " : The hit actor are " + FString::SanitizeFloat(HitActor->GetHealth()) + " HP now");
-
 			if (HitSound != nullptr)
 			{
 				AudioComponent->SetSound(HitSound);
@@ -251,7 +230,6 @@ void AWeapon::RaytracedShot()
 			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Orange, false, 0.5, 0, 0.25);
 			GLog->Log(this->GetName() + " : Raytracing -Actor is not NPC-");
 			GLog->Log(FString::SanitizeFloat(Hit.Distance));
-
 			if (MissSound != nullptr)
 			{
 				AudioComponent->SetSound(MissSound);
@@ -326,27 +304,26 @@ void AWeapon::ShotPhysic()
 void AWeapon::Reload()
 {
 	ANPC* ParentNPC = Cast<ANPC>(this->GetAttachParentActor());
-	
-	GLog->Log("1");
 
 	if (ParentNPC != nullptr)
 	{
-		GLog->Log("2");
-
-		for (int32 i = 0; ParentNPC->Inventory.Num(); i++)
+		for (int32 i = 0; i < ParentNPC->Inventory.Num(); i++)
 		{
 			AMunition* MunitionItem = Cast<AMunition>(ParentNPC->Inventory[i]);
-			
+
 			if (MunitionItem != nullptr)
 			{
-				GLog->Log("3");
 				Munition = MunitionItem->GetMunition();
-				
 				if (Munition > maxMunition)
 				{
-					GLog->Log("4");
 					MunitionItem->SetMunition(Munition - maxMunition);
+					Munition = maxMunition;
 				}
+				else
+				{
+					ParentNPC->Inventory[i] = nullptr;
+				}
+				break;
 			}
 		}
 	}

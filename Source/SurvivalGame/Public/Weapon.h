@@ -79,11 +79,11 @@ protected:
 		TSubclassOf<class ABullet> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Property")
-		float RayLenght = 100000.0;
+		float RayLenght = 100000.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Property")
-		float shootDeviation = 1.0;
+		float shootDeviation = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Property")
-		float projectileVelocity = 300.0;
+		float projectileVelocity = 300.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Property")
 		int maxMunition = 30;
 
