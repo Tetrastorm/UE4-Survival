@@ -31,7 +31,6 @@ void UNPCAnimInstance::UpdateStatement()
 				{
 					WeaponType = NPC->WeaponEquiped->GetType();
 				}
-
 				NPCPosition = NPC->GetPosition();
 
 				bIsFalling = NPC->GetMovementComponent()->IsFalling();

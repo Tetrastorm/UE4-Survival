@@ -206,11 +206,23 @@ void ANPC::Tick(float DeltaTime)
 
 void ANPC::StartJump()
 {
+	GLog->Log("StartJump()");
+	GLog->Log("Actual Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position));
 	if (fStamina > 0)
 	{
-		bPressedJump = true;
+		if (Position != EPosition::E_PRONE)
+		{
+			bPressedJump = true;
+		}
+		if (Position != EPosition::E_STAND)
+		{
+			Position = EPosition::E_STAND;
+			GetCharacterMovement()->MaxWalkSpeed = iWalkingSpeed; 
+		}
 		fStamina -= fStaminaConsume * 3;
 	}
+	GLog->Log("New Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position));
+	GLog->Log("");
 }
 
 void ANPC::StopJump()
@@ -220,16 +232,19 @@ void ANPC::StopJump()
 
 void ANPC::StartSprint()
 {
+	GLog->Log("StartSprint()");
+	GLog->Log("Actual Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position));
 	if (fStamina > 0)
 	{
-		if (Position != EPosition::E_STAND)
+		if (Position != EPosition::E_STAND || Position != EPosition::E_CROUCH)
 		{
 			Position = EPosition::E_STAND;
+			GetCharacterMovement()->MaxWalkSpeed = iSprintSpeed;
+			bSprint = true;
 		}
-
-		GetCharacterMovement()->MaxWalkSpeed = iSprintSpeed;
-		bSprint = true;
 	}
+	GLog->Log("New Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position));
+	GLog->Log("");
 }
 
 void ANPC::StopSprint()
@@ -240,6 +255,8 @@ void ANPC::StopSprint()
 
 void ANPC::DownPosition()
 {
+	GLog->Log("DownPosition()");
+	GLog->Log("Actual Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position) + "\n");
 	switch (Position)
 	{
 	case EPosition::E_STAND:
@@ -255,10 +272,14 @@ void ANPC::DownPosition()
 		GetCharacterMovement()->MaxWalkSpeed = iProneSpeed;
 		break;
 	}
+	GLog->Log("New Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position) + "\n");
+	GLog->Log("");
 }
 
 void ANPC::UpPosition()
 {
+	GLog->Log("UpPosition()");
+	GLog->Log("Actual Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position) + "\n");
 	switch (Position)
 	{
 	case EPosition::E_PRONE:
@@ -270,6 +291,8 @@ void ANPC::UpPosition()
 		GetCharacterMovement()->MaxWalkSpeed = iWalkingSpeed;
 		break;
 	}
+	GLog->Log("New Position: " + UUserDefinedEnum::GetValueAsString<EPosition>(TEXT("NPC.EPosition"), Position) + "\n");
+	GLog->Log("");
 }
 
 void ANPC::StartAction()
