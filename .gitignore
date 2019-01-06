@@ -1,3 +1,14 @@
+
+# UE4 Editor Linux Configuration
+*.txt
+.idea
+*.kdev4
+.vscode
+*.workspace
+*.pro
+*.pri
+Makefile
+
 # Visual Studio 2015 user specific files
 .vs/
 
@@ -75,3 +86,4 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+SurvivalGame.code-workspace

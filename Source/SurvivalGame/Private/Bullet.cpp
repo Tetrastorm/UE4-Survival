@@ -15,7 +15,7 @@ ABullet::ABullet(const FObjectInitializer& ObjectInitializer)
 
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
 	CollisionSphere->InitSphereRadius(5.0f);
-	CollisionSphere->bGenerateOverlapEvents = true;
+	CollisionSphere->SetGenerateOverlapEvents(true);
 	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABullet::Dommage);
 	CollisionSphere->SetHiddenInGame(false);
 

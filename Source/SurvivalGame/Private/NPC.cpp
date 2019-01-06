@@ -42,7 +42,7 @@ ANPC::ANPC()
 	DommageHitbox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Left Hand Hitbox"));
 	DommageHitbox->SetupAttachment(GetCapsuleComponent());
 	DommageHitbox->SetRelativeLocation(FVector(75.0, 0.0, 50.0));
-	DommageHitbox->bGenerateOverlapEvents = true;
+	DommageHitbox->SetGenerateOverlapEvents(true);
 	DommageHitbox->SetHiddenInGame(false);
 
 	AudioComponent=CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
@@ -429,7 +429,7 @@ void ANPC::Death()
 	{
 		if (Inventory.Num() < 0)
 		{
-			GetCapsuleComponent()->bGenerateOverlapEvents = true;
+			GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 		}
 		else
 		{
@@ -461,33 +461,31 @@ void ANPC::EquipeWeapon(AWeapon* Weapon)
 
 void ANPC::DropItem()
 {
-	FActorSpawnParameters SpawnParams;
+	//FActorSpawnParameters SpawnParams;
 	//AItem* DroppedItem = GetWorld()->SpawnActor<AItem>(Item, GetTransform(), SpawnParams);
 	
 	if (WeaponEquiped)
 	{
 		WeaponEquiped->DettachToPawn();
-		WeaponEquiped = NULL;
+		WeaponEquiped = nullptr;
 	}
-
 	ActualisedInventoryWeight();
 }
 
 void ANPC::ActualisedInventoryWeight()
 {
-	float fWeight = 0;
+	float fWeight = 0.0f;
 	
-	if (Inventory.Num() > 0)
+	if (0 < Inventory.Num())
 	{
-		for (int32 i = 0; i <= Inventory.Num(); i++)
+		for (int32 i = 0; i < Inventory.Num(); i++)
 		{
-			if (Inventory[i])
+			if (Inventory[i] != nullptr)
 			{
 				fWeight += Inventory[i]->GetWeight();
 			}
 		}
 	}
-
 	fInventoryWeight = fWeight;
 }
 

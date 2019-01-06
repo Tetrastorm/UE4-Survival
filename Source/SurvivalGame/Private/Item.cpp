@@ -21,7 +21,7 @@ AItem::AItem()
 	TriggerComponent = CreateDefaultSubobject <UBoxComponent>(TEXT("Trigger Component"));
 	TriggerComponent->SetupAttachment(RootComponent);
 	TriggerComponent->SetRelativeLocation(FVector::ZeroVector);
-	TriggerComponent->bGenerateOverlapEvents = true;
+	TriggerComponent->SetGenerateOverlapEvents(true);
 	TriggerComponent->OnComponentBeginOverlap.AddDynamic(this, &AItem::TriggerEnter);
 	TriggerComponent->SetCollisionObjectType(ECC_Pawn);
 	TriggerComponent->SetHiddenInGame(false);
@@ -54,7 +54,7 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TriggerComponent->bGenerateOverlapEvents = true;
+	TriggerComponent->SetGenerateOverlapEvents(true);
 }
 
 // State Function
@@ -68,7 +68,7 @@ void AItem::PickUp(AActor* OtherActor)
 	{
 		if (NPC->GetAction())
 		{
-			TriggerComponent->bGenerateOverlapEvents = false;
+			TriggerComponent->SetGenerateOverlapEvents(false);
 			NPC->AddInventory(this);
 			GLog->Log(NPC->GetName() + " Picking up : " + this->GetName());
 		}

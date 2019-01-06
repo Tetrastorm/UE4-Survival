@@ -96,7 +96,7 @@ void AWeapon::Attack()
 
 void AWeapon::ReactivateOverlappingEvents()
 {
-	TriggerComponent->bGenerateOverlapEvents = true;
+	TriggerComponent->SetGenerateOverlapEvents(true);
 }
 
 void AWeapon::CQCAttack(AActor* TargetActor)
