@@ -16,18 +16,18 @@ ANPC::ANPC()
 	bIsDeath = false;
 	bIsIronsight = false;
 
-	fMaxHealth = 100.0;
-	fMaxStamina = 100.0;
+	fMaxHealth = 100.0f;
+	fMaxStamina = 100.0f;
 
-	fArmor = 1.0;
-	fStaminaConsume = 5;
-	fStaminaRecovery = 2.5;
+	fArmor = 1.0f;
+	fStaminaConsume = 5.0f;
+	fStaminaRecovery = 2.5f;
 
-	fHealth = 100.0;
-	fStamina = 100.0;
-	fStealth = 5.0;
-	fInventoryWeight = 0.0;
-	fMaxInventoryWeight = 100.0;
+	fHealth = 100.0f;
+	fStamina = 100.0f;
+	fStealth = 5.0f;
+	fInventoryWeight = 0.0f;
+	fMaxInventoryWeight = 100.0f;
 
 	iPlayerLevel = 1;
 	iXPRequiment = 250;
@@ -322,7 +322,6 @@ void ANPC::StartAttack()
 		TArray<AActor*> OverlappingActors;
 
 		DommageHitbox->GetOverlappingActors(OverlappingActors);
-
 		if (OverlappingActors.Max() != 0)
 		{
 			ANPC* OverlappingActor = Cast<ANPC>(OverlappingActors[0]);
@@ -332,7 +331,6 @@ void ANPC::StartAttack()
 				OverlappingActor->AddHealth(-FMath::RandRange(1, 15) * OverlappingActor->GetArmor());
 				GLog->Log(FString::SanitizeFloat(OverlappingActor->GetHealth()));
 			}
-
 			if (combatSound)
 			{
 				AudioComponent->SetSound(combatSound);
