@@ -13,8 +13,8 @@ APlayerCharacter::APlayerCharacter()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeRotation(FRotator(0.0, 0.0, 0.0));
-	PlayerCamera->SetRelativeLocation(FVector(10.0, 20.0, 0.0));
+	PlayerCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	PlayerCamera->SetRelativeLocation(FVector(10.0f, 20.0f, 0.0f));
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
 }
@@ -41,7 +41,7 @@ void APlayerCharacter::BeginPlay()
 	FRotator TestRotator = GetMesh()->GetSocketRotation("head");
 	GLog->Log(TestRotator.ToString());
 
-	GetWorldTimerManager().SetTimer(ManagerTimer, this, &APlayerCharacter::Manager, 0.5, true);
+	GetWorldTimerManager().SetTimer(ManagerTimer, this, &APlayerCharacter::Manager, 0.5f, true);
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -81,14 +81,24 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::ForwardBackMovement(float fValue)
 {
-	FVector vDirection = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
-	AddMovementInput(vDirection, fValue);
+	if (Controller != nullptr)
+	{
+		FRotator Rotation = Controller->GetControlRotation();
+		Rotation.Pitch = 0.0f;
+		FVector vDirection = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+		AddMovementInput(vDirection, fValue);
+	}
 }
 
 void APlayerCharacter::RightLeftMovement(float fValue)
 {
-	FVector vDirection = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
-	AddMovementInput(vDirection, fValue);
+	if (Controller != nullptr)
+	{
+		FRotator Rotation = Controller->GetControlRotation();
+		Rotation.Pitch = 0.0f;
+		FVector vDirection = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+		AddMovementInput(vDirection, fValue);
+	}
 }
 
 // Action Function
@@ -96,7 +106,6 @@ void APlayerCharacter::RightLeftMovement(float fValue)
 void APlayerCharacter::ChangeCamera()
 {
 	GLog->Log("Camera changing mode");
-
 	bIsFPS = !bIsFPS;
 
 	if (bIsFPS)
@@ -104,7 +113,6 @@ void APlayerCharacter::ChangeCamera()
 		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("head"));
 		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
 		PlayerCamera->SetRelativeLocation(FPSCameraLocation);
-
 		GLog->Log("Player Camera are in FPS mode");
 	}
 	else
@@ -112,10 +120,8 @@ void APlayerCharacter::ChangeCamera()
 		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
 		PlayerCamera->SetRelativeLocation(TPSCameraLocation);
-
 		GLog->Log("Player Camera are in TPS mode");
 	}
-
 	GLog->Log(PlayerCamera->GetAttachSocketName().ToString());
 	GLog->Log(PlayerCamera->GetComponentLocation().ToString());
 	GLog->Log(PlayerCamera->GetComponentRotation().ToString());
@@ -151,7 +157,7 @@ void APlayerCharacter::StopWeaponSight()
 void APlayerCharacter::ViewRaycast()
 {
 	FHitResult Hit;
-	float fLenght = 500.0;
+	float fLenght = 500.0f;
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -168,8 +174,8 @@ void APlayerCharacter::ViewRaycast()
 		{
 			GLog->Log("Character Detected");
 
-			GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Blue, TEXT("Ennemy Health : " + FString::SanitizeFloat(Character->GetHealth())));
-			GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Blue, TEXT("Ennemy Stamina : " + FString::SanitizeFloat(Character->GetStamina())));
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, TEXT("Ennemy Health : " + FString::SanitizeFloat(Character->GetHealth())));
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, TEXT("Ennemy Stamina : " + FString::SanitizeFloat(Character->GetStamina())));
 		}
 
 		AItem* Item = Cast<AItem>(Hit.GetActor());
@@ -181,12 +187,11 @@ void APlayerCharacter::ViewRaycast()
 			if (this->GetAction())
 			{
 				Item->PickUp(this);
-				GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Blue, TEXT(" Added in inventory"));
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT(" Added in inventory"));
 			}
 		}
 	}
-
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, false, 0.5, 0, 0.25);
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, false, 0.5f, 0, 0.25f);
 }
 
 // Manage Function

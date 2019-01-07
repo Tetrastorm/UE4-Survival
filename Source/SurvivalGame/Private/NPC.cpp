@@ -41,7 +41,7 @@ ANPC::ANPC()
 
 	DommageHitbox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Left Hand Hitbox"));
 	DommageHitbox->SetupAttachment(GetCapsuleComponent());
-	DommageHitbox->SetRelativeLocation(FVector(75.0, 0.0, 50.0));
+	DommageHitbox->SetRelativeLocation(FVector(75.0f, 0.0f, 50.0f));
 	DommageHitbox->SetGenerateOverlapEvents(true);
 	DommageHitbox->SetHiddenInGame(false);
 
