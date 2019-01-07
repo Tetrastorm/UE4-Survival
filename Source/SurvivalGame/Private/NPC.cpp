@@ -436,10 +436,8 @@ void ANPC::StealthManager()
 
 void ANPC::Death()
 {
-	APlayer_Controller* Controller = Cast<APlayer_Controller>(GetController());	
-
+	APlayer_Controller* Controller = Cast<APlayer_Controller>(GetController());
 	bIsDeath = true;
-
 	this->GetMovementComponent()->Deactivate();
 
 	if (Controller)

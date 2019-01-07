@@ -33,6 +33,9 @@ protected:
 	void ForwardBackMovement(float fValue);
 	void RightLeftMovement(float fValue);
 
+	void CameraPitch(float scale);
+	void CameraRaw(float scale);
+
 	void ChangeCamera();
 
 	void StartWeaponSight();

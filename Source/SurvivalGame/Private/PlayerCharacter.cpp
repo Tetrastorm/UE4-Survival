@@ -13,8 +13,7 @@ APlayerCharacter::APlayerCharacter()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	PlayerCamera->SetRelativeLocation(FVector(10.0f, 20.0f, 0.0f));
+	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotation);
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
 }
@@ -101,6 +100,16 @@ void APlayerCharacter::RightLeftMovement(float fValue)
 	}
 }
 
+void APlayerCharacter::CameraPitch(float scale)
+{
+	
+}
+
+void APlayerCharacter::CameraRaw(float scale)
+{
+
+}
+
 // Action Function
 
 void APlayerCharacter::ChangeCamera()
@@ -111,15 +120,13 @@ void APlayerCharacter::ChangeCamera()
 	if (bIsFPS)
 	{
 		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("head"));
-		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
-		PlayerCamera->SetRelativeLocation(FPSCameraLocation);
+		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
 		GLog->Log("Player Camera are in FPS mode");
 	}
 	else
 	{
 		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
-		PlayerCamera->SetRelativeLocation(TPSCameraLocation);
+		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
 		GLog->Log("Player Camera are in TPS mode");
 	}
 	GLog->Log(PlayerCamera->GetAttachSocketName().ToString());
@@ -143,14 +150,12 @@ void APlayerCharacter::StopWeaponSight()
 	if (bIsFPS)
 	{
 		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Head"));
-		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
-		PlayerCamera->SetRelativeLocation(FPSCameraLocation);
+		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
 	}
 	else
 	{
 		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		PlayerCamera->SetRelativeRotation(FRotator::ZeroRotator);
-		PlayerCamera->SetRelativeLocation(TPSCameraLocation);
+		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
 	}
 }
 
