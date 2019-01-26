@@ -13,7 +13,7 @@ APlayerCharacter::APlayerCharacter()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator(0.0f, 90.0f, 0.0f));
+	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
 }
@@ -37,14 +37,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsFPS && GetCharacterMovement()->Velocity == FVector::ZeroVector)
-	{
-			FRotator Rotation = PlayerCamera->GetComponentRotation();
-			Rotation.Yaw += 0.0f;
-			GLog->Log("Yaw: " + FString::SanitizeFloat(Rotation.Yaw));
-			FVector Position = TPSCameraLocation * Rotation.Vector();
-			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);
-	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -121,8 +113,8 @@ void APlayerCharacter::CameraPitch(float scale)
 		{
 			/*FRotator Rotation = PlayerCamera->GetComponentRotation();
 			Rotation.Pitch += scale;
-			GLog->Log("Pitch: " + FString::SanitizeFloat(Rotation.Pitch) + "\nScale: " + FString::SanitizeFloat(scale));
-			FVector Position = TPSCameraLocation * (Rotation.Vector() * -1);
+			GLog->Log("Pitch: " + FString::SanitizeFloat(Rotation.Yaw));
+			FVector Position = FVector(-250.0f * cos(Rotation.Pitch * 0.017453292f), -250.0f * sin(Rotation.Pitch * 0.017453292f), 0.0f);
 			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);*/
 		}
 	}
@@ -143,11 +135,11 @@ void APlayerCharacter::CameraYaw(float scale)
 		}
 		else
 		{
-			/*FRotator Rotation = PlayerCamera->GetComponentRotation();
-			Rotation.Yaw -= scale;
-			GLog->Log("Yaw: " + FString::SanitizeFloat(Rotation.Yaw) + "\nScale: " + FString::SanitizeFloat(scale));
-			FVector Position = TPSCameraLocation * (Rotation.Vector() * -1);
-			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);*/
+			FRotator Rotation = PlayerCamera->GetComponentRotation();
+			Rotation.Yaw += scale;
+			GLog->Log("Yaw: " + FString::SanitizeFloat(scale));
+			FVector Position = FVector(-250.0f * cos(Rotation.Yaw * 0.017453292f), -250.0f * sin(Rotation.Yaw * 0.017453292f), 0.0f);
+			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);
 		}
 	}
 }
