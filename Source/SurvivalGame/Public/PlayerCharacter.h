@@ -34,7 +34,7 @@ protected:
 	void RightLeftMovement(float fValue);
 
 	void CameraPitch(float scale);
-	void CameraRaw(float scale);
+	void CameraYaw(float scale);
 
 	void ChangeCamera();
 
@@ -53,4 +53,5 @@ protected:
 private:
 
 	bool bIsFPS;
+	float radiusCamera;
 };

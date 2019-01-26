@@ -13,19 +13,9 @@ APlayerCharacter::APlayerCharacter()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotation);
+	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
-}
-
-// Public Function
-
-//Getter
-
-void APlayerCharacter::GetPlayerHUD()
-{
-	/*APlayerController* PlayerCon = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PlayerCon -> MyHUD();*/
 }
 
 // Protected Function
@@ -50,8 +40,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveX", this, &APlayerCharacter::ForwardBackMovement);
 	PlayerInputComponent->BindAxis("MoveY", this, &APlayerCharacter::RightLeftMovement);
 
-	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::CameraYaw);
+	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::CameraPitch);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump);
@@ -102,12 +92,40 @@ void APlayerCharacter::RightLeftMovement(float fValue)
 
 void APlayerCharacter::CameraPitch(float scale)
 {
-	
+	if (bIsFPS)
+	{
+		AddControllerPitchInput(scale);
+	}
+	else
+	{
+		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
+		{
+			AddControllerPitchInput(scale);
+		}
+		else
+		{
+			
+		}
+	}
 }
 
-void APlayerCharacter::CameraRaw(float scale)
+void APlayerCharacter::CameraYaw(float scale)
 {
+	if (bIsFPS)
+	{
+		AddControllerYawInput(scale);
+	}
+	else
+	{
+		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
+		{
+			AddControllerYawInput(scale);
+		}
+		else
+		{
 
+		}
+	}
 }
 
 // Action Function
