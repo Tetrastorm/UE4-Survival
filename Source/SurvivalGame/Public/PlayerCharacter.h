@@ -18,16 +18,15 @@ public:
 
 	APlayerCharacter();
 
-	void GetPlayerHUD();
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
-		FVector FPSCameraLocation = FVector(10.0, 20.0, 0.0);
+		FVector FPSCameraLocation = FVector(10.0f, 20.0f, 0.0f);
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
-		FVector TPSCameraLocation = FVector(-100, 75.0, 90);
+		FVector TPSCameraLocation = FVector(-100.0f, 0.0f, 90.0f);
 
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void ForwardBackMovement(float fValue);

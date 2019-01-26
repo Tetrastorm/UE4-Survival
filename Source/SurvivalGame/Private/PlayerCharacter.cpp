@@ -13,7 +13,7 @@ APlayerCharacter::APlayerCharacter()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
+	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator(0.0f, 90.0f, 0.0f));
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
 }
@@ -31,6 +31,20 @@ void APlayerCharacter::BeginPlay()
 	GLog->Log(TestRotator.ToString());
 
 	GetWorldTimerManager().SetTimer(ManagerTimer, this, &APlayerCharacter::Manager, 0.5f, true);
+}
+
+void APlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!bIsFPS && GetCharacterMovement()->Velocity == FVector::ZeroVector)
+	{
+			FRotator Rotation = PlayerCamera->GetComponentRotation();
+			Rotation.Yaw += 0.0f;
+			GLog->Log("Yaw: " + FString::SanitizeFloat(Rotation.Yaw));
+			FVector Position = TPSCameraLocation * Rotation.Vector();
+			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -101,10 +115,15 @@ void APlayerCharacter::CameraPitch(float scale)
 		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
 		{
 			AddControllerPitchInput(scale);
+			PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
 		}
 		else
 		{
-			
+			/*FRotator Rotation = PlayerCamera->GetComponentRotation();
+			Rotation.Pitch += scale;
+			GLog->Log("Pitch: " + FString::SanitizeFloat(Rotation.Pitch) + "\nScale: " + FString::SanitizeFloat(scale));
+			FVector Position = TPSCameraLocation * (Rotation.Vector() * -1);
+			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);*/
 		}
 	}
 }
@@ -120,10 +139,15 @@ void APlayerCharacter::CameraYaw(float scale)
 		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
 		{
 			AddControllerYawInput(scale);
+			PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
 		}
 		else
 		{
-
+			/*FRotator Rotation = PlayerCamera->GetComponentRotation();
+			Rotation.Yaw -= scale;
+			GLog->Log("Yaw: " + FString::SanitizeFloat(Rotation.Yaw) + "\nScale: " + FString::SanitizeFloat(scale));
+			FVector Position = TPSCameraLocation * (Rotation.Vector() * -1);
+			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);*/
 		}
 	}
 }
@@ -139,12 +163,14 @@ void APlayerCharacter::ChangeCamera()
 	{
 		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("head"));
 		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
+		PlayerCamera->bUsePawnControlRotation = true;
 		GLog->Log("Player Camera are in FPS mode");
 	}
 	else
 	{
 		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
+		PlayerCamera->bUsePawnControlRotation = false;
 		GLog->Log("Player Camera are in TPS mode");
 	}
 	GLog->Log(PlayerCamera->GetAttachSocketName().ToString());
@@ -169,11 +195,13 @@ void APlayerCharacter::StopWeaponSight()
 	{
 		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Head"));
 		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
+		PlayerCamera->bUsePawnControlRotation = true;
 	}
 	else
 	{
 		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
+		PlayerCamera->bUsePawnControlRotation = false;
 	}
 }
 
