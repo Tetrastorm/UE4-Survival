@@ -111,11 +111,11 @@ void APlayerCharacter::CameraPitch(float scale)
 		}
 		else
 		{
-			/*FRotator Rotation = PlayerCamera->GetComponentRotation();
+			FRotator Rotation = PlayerCamera->GetComponentRotation() - this->GetCapsuleComponent()->GetComponentRotation();
 			Rotation.Pitch += scale;
 			GLog->Log("Pitch: " + FString::SanitizeFloat(Rotation.Yaw));
-			FVector Position = FVector(-250.0f * cos(Rotation.Pitch * 0.017453292f), -250.0f * sin(Rotation.Pitch * 0.017453292f), 0.0f);
-			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);*/
+			FVector Position = FVector(-250.0f * cos(Rotation.Yaw * 0.017453292f), -250.0f * sin(Rotation.Yaw * 0.017453292f), -250.0f * tan(Rotation.Pitch * 0.017453292f));
+			PlayerCamera->SetRelativeLocationAndRotation(Position, Rotation);
 		}
 	}
 }
