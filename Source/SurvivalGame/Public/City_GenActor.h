@@ -30,5 +30,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Procedural")
 		unsigned int seed;
 	UPROPERTY(EditDefaultsOnly, Category="Asset Bank")
-		TSubclassOf<class AStaticMeshActor> BuildingModules;
+		TArray <TSubclassOf<class AActor>> BuildingModules;
 };

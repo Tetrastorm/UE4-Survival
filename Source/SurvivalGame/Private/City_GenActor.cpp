@@ -17,7 +17,9 @@ void ACity_GenActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GLog->Log("City_GenActor: BeginPlay");
 	SpawnAsset(FVector::ZeroVector, FRotator::ZeroRotator, 0);
+	this->Destroy();
 }
 
 // Called every frame
@@ -29,10 +31,12 @@ void ACity_GenActor::Tick(float DeltaTime)
 
 void ACity_GenActor::SpawnAsset(FVector Location, FRotator Rotation, unsigned int Index)
 {
-	UWorld * const World = GetWorld();
+	UWorld* const World = GetWorld();
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
 
-	if (World != nullptr)
-		World->SpawnActor<AStaticMeshActor>(BuildingModules, Location, Rotation, SpawnParams);
+	SpawnParams.Owner = this;
+	if (World != nullptr && Index < (unsigned int)BuildingModules.Num() && BuildingModules[Index] != nullptr)
+	{
+		World->SpawnActor<AActor>(BuildingModules[Index], Location, Rotation, SpawnParams);
+	}
 }
