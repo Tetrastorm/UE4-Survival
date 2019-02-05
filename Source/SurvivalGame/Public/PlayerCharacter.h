@@ -52,5 +52,6 @@ protected:
 private:
 
 	bool bIsFPS;
-	float radiusCamera;
+	float RadiusCamera;
+	FRotator CameraRotation;
 };
