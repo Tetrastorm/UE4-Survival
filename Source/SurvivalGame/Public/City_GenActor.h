@@ -19,10 +19,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void SpawnAsset(FVector Location, FRotator Rotation, unsigned int Index);
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Procedural")
+		unsigned int seed;
+	UPROPERTY(EditDefaultsOnly, Category="Asset Bank")
+		TSubclassOf<class AStaticMeshActor> BuildingModules;
 };

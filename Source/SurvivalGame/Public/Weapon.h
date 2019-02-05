@@ -11,8 +11,7 @@
 #include "Weapon.generated.h"
 
 /**
- * 
- */
+**/
 
 UENUM(BlueprintType)
 enum class EType : uint8
@@ -48,7 +47,7 @@ public:
 		UTexture2D* HUDPicture;
 	
 	UFUNCTION(BlueprintCallable, Category = "Getter")
-	int GetMaxMunition();
+		int GetMaxMunition();
 	UFUNCTION(BlueprintCallable, Category = "Getter")
 		int GetMunition();
 

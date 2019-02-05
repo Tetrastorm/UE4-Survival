@@ -257,9 +257,8 @@ void AWeapon::ShotPhysic()
 		if (AttachActor != nullptr && AttachActor->GetAttack())
 		{
 			Munition--;
-
-			FVector CameraLoc;
-			FRotator CameraRot;
+			FVector CameraLoc = FVector::ZeroVector;
+			FRotator CameraRot = FRotator::ZeroRotator;
 
 			this->GetAttachParentActor()->GetActorEyesViewPoint(CameraLoc, CameraRot);
 

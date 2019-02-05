@@ -8,7 +8,7 @@
 ACity_GenActor::ACity_GenActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -16,7 +16,8 @@ ACity_GenActor::ACity_GenActor()
 void ACity_GenActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SpawnAsset(FVector::ZeroVector, FRotator::ZeroRotator, 0);
 }
 
 // Called every frame
@@ -26,3 +27,12 @@ void ACity_GenActor::Tick(float DeltaTime)
 
 }
 
+void ACity_GenActor::SpawnAsset(FVector Location, FRotator Rotation, unsigned int Index)
+{
+	UWorld * const World = GetWorld();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	if (World != nullptr)
+		World->SpawnActor<AStaticMeshActor>(BuildingModules, Location, Rotation, SpawnParams);
+}
