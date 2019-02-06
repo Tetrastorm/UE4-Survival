@@ -27,8 +27,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Procedural")
-		unsigned int seed;
-	UPROPERTY(EditDefaultsOnly, Category="Asset Bank")
+	UPROPERTY(EditDefaultsOnly, Category = "Procedural")
+		float caseLenght;
+	UPROPERTY(EditDefaultsOnly, Category = "Procedural")
+		unsigned maxSize;
+	UPROPERTY(EditDefaultsOnly, Category = "Procedural")
+		unsigned decreaseSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Asset Bank")
 		TArray <TSubclassOf<class AActor>> BuildingModules;
+
+private:
+	unsigned int** InitMatrix(unsigned int size);
+	unsigned int** MapMatrixGen();
+	void MatrixGen(unsigned int ** matrix);
 };
