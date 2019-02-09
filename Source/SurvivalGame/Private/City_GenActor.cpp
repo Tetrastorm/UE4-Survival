@@ -40,24 +40,37 @@ unsigned int** ACity_GenActor::InitMatrix(unsigned int size)
 	return (matrix);
 }
 
+static unsigned int HowManyModule(unsigned int ** const matrix, unsigned int const x, unsigned int const  y, unsigned int const size)
+{
+	unsigned int numberofmodule = 0;
+
+	if (x > 0 && x < size && y > 0 && y < size && matrix[y][x] == 1)
+	{
+		numberofmodule++;
+		numberofmodule += HowManyModule(matrix, x - 1, y, size);
+		numberofmodule += HowManyModule(matrix, x, y - 1, size);
+		numberofmodule += HowManyModule(matrix, x - 1, y - 1, size);
+	}
+	return (numberofmodule);
+}
 
 unsigned int** ACity_GenActor::MapMatrixGen()
 {
 	unsigned int size = maxSize / caseLenght;
 	unsigned int** matrix = InitMatrix(size);
 
-	for (unsigned int y = 0; y < size; y++)
+	for (unsigned int y = 2; y < size; y++)
 	{
-		for (unsigned int x = 0; x < size; x++)
+		for (unsigned int x = 2; x < size; x++)
 		{
-			matrix[y][x] = 1;
-		}
-	}
-	for (unsigned int y = 0; y < size; y++)
-	{
-		for (unsigned int x = 0; x < size; x++)
-		{
-			GLog->Logf(TEXT("Matrice Value: %d"), matrix[y][x]);
+			if (sin(y * x) < 0.5f && ((matrix[y - 1][x] != 0 && matrix[y - 2][x] != 0) || (matrix[y][x - 1] != 0 && matrix[y][x - 2] != 0)))
+			{
+				matrix[y][x] = 1;
+			}
+			else
+			{
+				matrix[y][x] = 0;
+			}
 		}
 	}
 	return (matrix);
@@ -74,7 +87,6 @@ void ACity_GenActor::MatrixGen(unsigned int** matrix)
 			if (matrix[y][x] != 0)
 			{
 				FVector Location = FVector(x * (caseLenght / 2) - ((size / 2) * caseLenght / 2), y * (caseLenght / 2) - ((size / 2) * caseLenght / 2), 0.0f);
-				GLog->Log("Location = " + Location.ToString());
 				SpawnAsset(Location, FRotator::ZeroRotator, 0);
 			}
 		}
