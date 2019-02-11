@@ -10,13 +10,17 @@ APlayerCharacter::APlayerCharacter()
 {
 	FName HeadBone = TEXT("head");
 	bIsFPS = true;
-	RadiusCamera = 250.f;
+	RadiusCamera = DefaultRadius;
 	CameraRotation = FRotator::ZeroRotator;
 
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
+	CameraBoom->SetupAttachment(GetMesh(), HeadBone);
+	CameraBoom->TargetArmLength = 250.0f;
+	CameraBoom->bUsePawnControlRotation = true;
+
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	PlayerCamera->SetupAttachment(GetMesh(), HeadBone);
-	PlayerCamera->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
-	PlayerCamera->bUsePawnControlRotation = true;
+	PlayerCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	PlayerCamera->bUsePawnControlRotation = false;
 	PlayerCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
 }
 
@@ -28,11 +32,6 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GLog->Log("PlayerCharacter Intialised");
-	FRotator TestRotator = GetMesh()->GetSocketRotation("head");
-	GLog->Log(TestRotator.ToString());
-	CameraRotation = PlayerCamera->GetComponentRotation() - this->GetCapsuleComponent()->GetComponentRotation();
-
 	GetWorldTimerManager().SetTimer(ManagerTimer, this, &APlayerCharacter::Manager, 0.5f, true);
 }
 
@@ -40,11 +39,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsFPS)
-	{
-		FVector Position = FVector(-250.0f * cos(CameraRotation.Yaw * 0.017453292f), -250.0f * sin(CameraRotation.Yaw * 0.017453292f), -250.0f * tan(CameraRotation.Pitch * 0.017453292f));
-		PlayerCamera->SetRelativeLocationAndRotation(Position, CameraRotation);
-	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -54,8 +48,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveX", this, &APlayerCharacter::ForwardBackMovement);
 	PlayerInputComponent->BindAxis("MoveY", this, &APlayerCharacter::RightLeftMovement);
 
-	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::CameraYaw);
-	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::CameraPitch);
+	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump);
@@ -106,42 +100,12 @@ void APlayerCharacter::RightLeftMovement(float fValue)
 
 void APlayerCharacter::CameraPitch(float scale)
 {
-	if (bIsFPS)
-	{
-		AddControllerPitchInput(scale);
-	}
-	else
-	{
-		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
-		{
-			AddControllerPitchInput(scale);
-			PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
-		}
-		else
-		{
-			CameraRotation.Pitch += scale;
-		}
-	}
+
 }
 
 void APlayerCharacter::CameraYaw(float scale)
 {
-	if (bIsFPS)
-	{
-		AddControllerYawInput(scale);
-	}
-	else
-	{
-		if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
-		{
-			PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
-			AddControllerYawInput(scale);
-		}
-		else
-		{
-			CameraRotation.Yaw += scale;
-		}
-	}
+
 }
 
 // Action Function
@@ -153,23 +117,12 @@ void APlayerCharacter::ChangeCamera()
 
 	if (bIsFPS)
 	{
-		PlayerCamera->bUsePawnControlRotation = true;
-		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("head"));
-		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
 		GLog->Log("Player Camera are in FPS mode");
 	}
 	else
 	{
-		PlayerCamera->bUsePawnControlRotation = false;
-		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
-		
 		GLog->Log("Player Camera are in TPS mode");
 	}
-	PlayerCamera->GetComponentRotation() - this->GetCapsuleComponent()->GetComponentRotation();
-	GLog->Log(PlayerCamera->GetAttachSocketName().ToString());
-	GLog->Log(PlayerCamera->GetComponentLocation().ToString());
-	GLog->Log(PlayerCamera->GetComponentRotation().ToString());
 }
 
 void APlayerCharacter::StartWeaponSight()
@@ -177,7 +130,6 @@ void APlayerCharacter::StartWeaponSight()
 	if (WeaponEquiped)
 	{
 		SetIronsight(true);
-		//PlayerCamera->AttachToComponent(WeaponEquiped->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("WeaponCam"));
 	}
 }
 
@@ -187,15 +139,11 @@ void APlayerCharacter::StopWeaponSight()
 
 	if (bIsFPS)
 	{
-		PlayerCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Head"));
-		PlayerCamera->SetRelativeLocationAndRotation(FPSCameraLocation, FRotator::ZeroRotator);
-		PlayerCamera->bUsePawnControlRotation = true;
+
 	}
 	else
 	{
-		PlayerCamera->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		PlayerCamera->SetRelativeLocationAndRotation(TPSCameraLocation, FRotator::ZeroRotator);
-		PlayerCamera->bUsePawnControlRotation = false;
+
 	}
 }
 
@@ -203,7 +151,6 @@ void APlayerCharacter::ViewRaycast()
 {
 	FHitResult Hit;
 	float fLenght = 500.0f;
-
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 	FVector StartLocation = PlayerCamera->GetComponentLocation();

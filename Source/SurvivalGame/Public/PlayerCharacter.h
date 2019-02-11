@@ -22,6 +22,8 @@ public:
 		FVector FPSCameraLocation = FVector(10.0f, 20.0f, 0.0f);
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
 		FVector TPSCameraLocation = FVector(-100.0f, 0.0f, 90.0f);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
+		float DefaultRadius  = 250.0f;
 
 protected:
 
@@ -44,8 +46,10 @@ protected:
 
 	void Manager();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UCameraComponent* PlayerCamera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+		class USpringArmComponent *CameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+		class UCameraComponent *PlayerCamera;
 	UPROPERTY()
 		FTimerHandle ManagerTimer;
 
