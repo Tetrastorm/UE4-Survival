@@ -58,4 +58,6 @@ private:
 	bool bIsFPS;
 	float RadiusCamera;
 	FRotator CameraRotation;
+
+	// Check if I can change Visual Studio Compiler by CLang
 };

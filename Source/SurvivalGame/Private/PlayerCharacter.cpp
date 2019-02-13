@@ -8,15 +8,15 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-	FName HeadBone = TEXT("head");
 	bIsFPS = true;
 	RadiusCamera = DefaultRadius;
 	CameraRotation = FRotator::ZeroRotator;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
-	CameraBoom->SetupAttachment(GetMesh(), HeadBone);
-	CameraBoom->TargetArmLength = 250.0f;
+	CameraBoom->SetupAttachment(GetMesh(), FName("head"));
+	GLog->Log("Bone Location: " + GetMesh()->GetSocketLocation(FName("head")).ToString());
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->TargetArmLength = 0.0f;
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -26,7 +26,7 @@ APlayerCharacter::APlayerCharacter()
 
 // Protected Function
 
-//Virtual Function
+// Virtual Function
 
 void APlayerCharacter::BeginPlay()
 {
@@ -39,6 +39,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	GLog->Log("Camera Rotation: " + (CameraBoom->GetComponentRotation() - GetActorRotation()).ToString());
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -48,8 +49,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveX", this, &APlayerCharacter::ForwardBackMovement);
 	PlayerInputComponent->BindAxis("MoveY", this, &APlayerCharacter::RightLeftMovement);
 
-	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookX", this, &APlayerCharacter::CameraYaw);
+	PlayerInputComponent->BindAxis("LookY", this, &APlayerCharacter::CameraPitch);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump);
@@ -100,12 +101,40 @@ void APlayerCharacter::RightLeftMovement(float fValue)
 
 void APlayerCharacter::CameraPitch(float scale)
 {
-
+	if (GetMovementComponent()->Velocity == FVector::ZeroVector && !bIsFPS)
+	{
+		CameraBoom->bUsePawnControlRotation = false;
+		FRotator Rotation = CameraBoom->GetComponentRotation() - this->GetActorRotation();
+		GLog->Log("Pitch: " + Rotation.ToString());
+		Rotation.Pitch += scale;
+		Rotation.Roll = 0.0f;
+		CameraBoom->SetRelativeRotation(Rotation);
+	}
+	else
+	{
+		CameraBoom->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		CameraBoom->bUsePawnControlRotation = true;
+		AddControllerPitchInput(scale);
+	}
 }
 
 void APlayerCharacter::CameraYaw(float scale)
 {
-
+	if (GetMovementComponent()->Velocity == FVector::ZeroVector && !bIsFPS)
+	{
+		CameraBoom->bUsePawnControlRotation = false;
+		FRotator Rotation = CameraBoom->GetComponentRotation() - this->GetActorRotation();
+		GLog->Log("Yaw: " + Rotation.ToString());
+		Rotation.Yaw += scale;
+		Rotation.Roll = 0.0f;
+		CameraBoom->SetRelativeRotation(Rotation);
+	}
+	else
+	{
+		CameraBoom->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		CameraBoom->bUsePawnControlRotation = true;
+		AddControllerYawInput(scale);
+	}
 }
 
 // Action Function
@@ -117,10 +146,12 @@ void APlayerCharacter::ChangeCamera()
 
 	if (bIsFPS)
 	{
+		CameraBoom->TargetArmLength = 0.0f;
 		GLog->Log("Player Camera are in FPS mode");
 	}
 	else
 	{
+		CameraBoom->TargetArmLength = RadiusCamera;
 		GLog->Log("Player Camera are in TPS mode");
 	}
 }
@@ -165,7 +196,6 @@ void APlayerCharacter::ViewRaycast()
 		if (Character)
 		{
 			GLog->Log("Character Detected");
-
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, TEXT("Ennemy Health : " + FString::SanitizeFloat(Character->GetHealth())));
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, TEXT("Ennemy Stamina : " + FString::SanitizeFloat(Character->GetStamina())));
 		}
@@ -175,7 +205,6 @@ void APlayerCharacter::ViewRaycast()
 		if (Item)
 		{
 			GLog->Log("Item Detected");
-			
 			if (this->GetAction())
 			{
 				Item->PickUp(this);
