@@ -13,7 +13,7 @@ APlayerCharacter::APlayerCharacter()
 	CameraRotation = FRotator::ZeroRotator;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
-	CameraBoom->SetupAttachment(GetMesh(), FName("head"));
+	CameraBoom->SetupAttachment(this->GetMesh(), FName("head"));
 	GLog->Log("Bone Location: " + GetMesh()->GetSocketLocation(FName("head")).ToString());
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->TargetArmLength = 0.0f;
@@ -39,7 +39,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GLog->Log("Camera Rotation: " + (CameraBoom->GetComponentRotation() - GetActorRotation()).ToString());
+	if (!bIsFPS && GetVelocity() == FVector::ZeroVector)
+	{
+		CameraBoom->bUsePawnControlRotation = false;
+		CameraRotation.Roll = 0.0f;
+		if (CameraRotation.Pitch > 85.0f)
+		{
+			CameraRotation.Pitch = 85.0f;
+		}
+		else if (CameraRotation.Pitch < -85.0f)
+		{
+			CameraRotation.Pitch = -85.0f;
+		}
+		CameraBoom->SetRelativeRotation(CameraRotation);
+	}
+	else if (CameraBoom->bUsePawnControlRotation == false)
+	{
+		CameraBoom->bUsePawnControlRotation = true;
+		CameraRotation = FRotator(0.0f, 0.0f, 0.0f);
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -103,17 +121,10 @@ void APlayerCharacter::CameraPitch(float scale)
 {
 	if (GetMovementComponent()->Velocity == FVector::ZeroVector && !bIsFPS)
 	{
-		CameraBoom->bUsePawnControlRotation = false;
-		FRotator Rotation = CameraBoom->GetComponentRotation() - this->GetActorRotation();
-		GLog->Log("Pitch: " + Rotation.ToString());
-		Rotation.Pitch += scale;
-		Rotation.Roll = 0.0f;
-		CameraBoom->SetRelativeRotation(Rotation);
+		CameraRotation.Pitch += scale;
 	}
 	else
 	{
-		CameraBoom->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		CameraBoom->bUsePawnControlRotation = true;
 		AddControllerPitchInput(scale);
 	}
 }
@@ -122,17 +133,10 @@ void APlayerCharacter::CameraYaw(float scale)
 {
 	if (GetMovementComponent()->Velocity == FVector::ZeroVector && !bIsFPS)
 	{
-		CameraBoom->bUsePawnControlRotation = false;
-		FRotator Rotation = CameraBoom->GetComponentRotation() - this->GetActorRotation();
-		GLog->Log("Yaw: " + Rotation.ToString());
-		Rotation.Yaw += scale;
-		Rotation.Roll = 0.0f;
-		CameraBoom->SetRelativeRotation(Rotation);
+		CameraRotation.Yaw += scale;
 	}
 	else
 	{
-		CameraBoom->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		CameraBoom->bUsePawnControlRotation = true;
 		AddControllerYawInput(scale);
 	}
 }
@@ -151,6 +155,7 @@ void APlayerCharacter::ChangeCamera()
 	}
 	else
 	{
+		CameraRotation = FRotator(0.0f, 0.0f, 0.0f);
 		CameraBoom->TargetArmLength = RadiusCamera;
 		GLog->Log("Player Camera are in TPS mode");
 	}
