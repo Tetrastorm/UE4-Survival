@@ -13,8 +13,7 @@ APlayerCharacter::APlayerCharacter()
 	CameraRotation = FRotator::ZeroRotator;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
-	CameraBoom->SetupAttachment(this->GetMesh(), FName("head"));
-	GLog->Log("Bone Location: " + GetMesh()->GetSocketLocation(FName("head")).ToString());
+	CameraBoom->AttachTo(RootComponent);
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->TargetArmLength = 0.0f;
 
