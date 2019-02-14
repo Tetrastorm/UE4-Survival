@@ -18,23 +18,24 @@ public:
 
 	APlayerCharacter();
 
-	void GetPlayerHUD();
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
-		FVector FPSCameraLocation = FVector(10.0, 20.0, 0.0);
+		FVector FPSCameraLocation = FVector(10.0f, 20.0f, 0.0f);
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
-		FVector TPSCameraLocation = FVector(-100, 75.0, 90);
+		FVector TPSCameraLocation = FVector(-100.0f, 0.0f, 90.0f);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera")
+		float DefaultRadius  = 250.0f;
 
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void ForwardBackMovement(float fValue);
 	void RightLeftMovement(float fValue);
 
 	void CameraPitch(float scale);
-	void CameraRaw(float scale);
+	void CameraYaw(float scale);
 
 	void ChangeCamera();
 
@@ -45,12 +46,16 @@ protected:
 
 	void Manager();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UCameraComponent* PlayerCamera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+		class USpringArmComponent *CameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+		class UCameraComponent *PlayerCamera;
 	UPROPERTY()
 		FTimerHandle ManagerTimer;
 
 private:
 
 	bool bIsFPS;
+	float RadiusCamera;
+	FRotator CameraRotation;
 };
