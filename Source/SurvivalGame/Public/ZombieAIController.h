@@ -7,9 +7,6 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "ZombieAIController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SURVIVALGAME_API AZombieAIController : public AAIController
 {
@@ -19,7 +16,7 @@ public:
 
 	AZombieAIController();
 
-	virtual void Possess(APawn* Pawn) override;
+	virtual void OnPossess(APawn* Pawn) override;
 
 	void SetSeenTarget(APawn* Pawn);
 

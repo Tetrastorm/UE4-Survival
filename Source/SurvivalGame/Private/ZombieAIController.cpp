@@ -11,9 +11,9 @@ AZombieAIController::AZombieAIController()
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
 }
 
-void AZombieAIController::Possess(APawn* Pawn)
+void AZombieAIController::OnPossess(APawn* Pawn)
 {
-	Super::Possess(Pawn);
+	Super::OnPossess(Pawn);
 
 	AZombieCharacter* ZombieCharacter = Cast<AZombieCharacter>(Pawn);
 
@@ -23,7 +23,6 @@ void AZombieAIController::Possess(APawn* Pawn)
 		{
 			BlackboardComp->InitializeBlackboard(*(ZombieCharacter->BehaviorTree->BlackboardAsset));
 			BehaviorComp->StartTree(*ZombieCharacter->BehaviorTree);
-
 			GLog->Log("ZombieAIController possess by a ZombieCharacter");
 		}
 	}
